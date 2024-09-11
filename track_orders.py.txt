@@ -1,0 +1,55 @@
+from collections import Counter
+
+class TrackOrders:
+    def __init__(self):
+
+        self._data = list()
+
+    def __len__(self):
+        # количество заказов
+        return len(self._data)
+
+    def add_new_order(self, customer, order, day):
+        # добавление нового заказа
+        self._data.append({"customer": customer, "order": order, "day": day})
+
+    def get_most_ordered_dish_per_customer(self, customer):
+        # Фильтр заказа по клиенту и заказываемым им блюдам
+        items = [order["order"] for order in self._data if order["customer"] == customer.lower()]
+        # Возрат самого заказываемого блюда
+        result = Counter(items).most_common()
+        return result[0][0] if result else None
+
+    def get_never_ordered_per_customer(self, customer):
+        # Получить все заказы, сделанные указанным клиентом
+        items = [order["order"] for order in self._data if order["customer"] == customer.lower()]
+        personal = Counter(items).most_common()
+        personal_set = {item[0] for item in personal}
+        orders_order = [order["order"] for order in self._data]
+        total = Counter(orders_order).most_common()
+        total_set = {item[0] for item in total}
+        #  Вернуть товары, которые клиент никогда не заказывал
+        return total_set - personal_set
+
+    def get_days_never_visited_per_customer(self, customer):
+        # Получить все дни, в которые клиент посещал заведение 
+        personal_weekday = [order["day"] for order in self._data if order["customer"] == customer.lower()]
+        personal = Counter(personal_weekday).most_common()
+        personal_set = {item[0] for item in personal}
+        orders_order = [order["day"] for order in self._data]
+        total = Counter(orders_order).most_common()
+        total_set = {item[0] for item in total}
+        #  Возврат дней, в которые клиент не посещал заведение 
+        return total_set - personal_set
+
+    def get_busiest_day(self):
+        # День с наибольшим количеством заказов
+        orders_order = [order["day"] for order in self._data]
+        total = Counter(orders_order).most_common()
+        return total[0][0] if total else None
+
+    def get_least_busy_day(self):
+        # День с наименьшим количеством заказов
+        orders_order = [order["day"] for order in self._data]
+        total = Counter(orders_order).most_common()
+        return total[-1][0] if total else None
